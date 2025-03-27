@@ -1,13 +1,44 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import React, { useState } from "react";
+import { AnimatePresence } from "framer-motion";
+import WelcomeScreen from "@/components/WelcomeScreen";
+import GameInterface from "@/components/GameInterface";
+import GameOverScreen from "@/components/GameOverScreen";
+import ARScene from "@/components/ARScene";
 
 const Index = () => {
+  const [gameState, setGameState] = useState<"welcome" | "playing" | "gameOver">("welcome");
+  const [score, setScore] = useState(0);
+  
+  const startGame = () => {
+    setGameState("playing");
+  };
+  
+  const endGame = (finalScore: number) => {
+    setScore(finalScore);
+    setGameState("gameOver");
+  };
+  
+  const restartGame = () => {
+    setGameState("welcome");
+  };
+  
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
-      </div>
-    </div>
+    <AnimatePresence mode="wait">
+      {gameState === "welcome" && (
+        <WelcomeScreen onStart={startGame} />
+      )}
+      
+      {gameState === "playing" && (
+        <ARScene>
+          <GameInterface onGameOver={endGame} />
+        </ARScene>
+      )}
+      
+      {gameState === "gameOver" && (
+        <GameOverScreen score={score} onRestart={restartGame} />
+      )}
+    </AnimatePresence>
   );
 };
 
